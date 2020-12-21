@@ -6,6 +6,8 @@ southafrica_dum	sic_2	patent_num_2	cited_num_2	red	constituency	_merge	ROA
 
 #! /usr/bin/env python3
 
+import numpy as np
+import pandas as pd
 from company import Company
 from read_excel import read_excel
 
@@ -15,6 +17,25 @@ def set_company(data_frame):
     for index in range(len(data_frame)):
         data_year         = data_frame['year'][index]
         company_name      = data_frame['ticker'][index]
+
+        data_array        = [data_frame['assets_total'][index],
+                             data_frame['ROA_annual'][index],
+                             data_frame['sales_annual'][index],
+                             data_frame['rd_expense'][index],
+                             data_frame['sic'][index],
+                             data_frame['debt_to_assets'][index],
+                             data_frame['firm_id'][index],
+                             data_frame['RD_spending'][index],
+                             data_frame['csp_annual'][index],
+                             data_frame['ad_intensity_industry'][index],
+                             data_frame['southafrica_dum'][index],
+                             data_frame['sic_2'][index],
+                             data_frame['patent_num_2'][index],
+                             data_frame['cited_num_2'][index],
+                             #  data_frame['red'][index],
+                             #  data_frame['constituency'][index],
+                             data_frame['_merge'][index]
+                            ]
 
         if (company_name in companies):
             companies[company_name].assets_total.update({data_year:data_frame['assets_total'][index]})
@@ -34,7 +55,12 @@ def set_company(data_frame):
             companies[company_name].red.update({data_year:data_frame['red'][index]})
             companies[company_name].constituency.update({data_year:data_frame['constituency'][index]})
             companies[company_name]._merge.update({data_year:data_frame['_merge'][index]})
-            companies[company_name].ROA.update({data_year:data_frame['ROA'][index]})
+
+            for data in data_array:
+                if pd.isnull(data):
+                    print(data_year, company_name)
+                    companies[company_name].valid = False
+                    break
         
         else:
             company_temp = Company()
@@ -56,13 +82,19 @@ def set_company(data_frame):
             company_temp.red.update({data_year:data_frame['red'][index]})
             company_temp.constituency.update({data_year:data_frame['constituency'][index]})
             company_temp._merge.update({data_year:data_frame['_merge'][index]})
-            company_temp.ROA.update({data_year:data_frame['ROA'][index]})
+
+            for data in data_array:
+                if pd.isnull(data):
+                    print(data_year, company_name)
+                    company_temp.valid = False
+                    break
 
             companies.update({company_name:company_temp})
 
     return companies
 
 if __name__ == '__main__':
-    data_frame = read_excel()
+    excel_file = 'data_origin.xls'
+    data_frame = read_excel(excel_file=excel_file, sheet_name='Sheet1')
     companies = set_company(data_frame)
     print(companies['AA'].roa_annual)

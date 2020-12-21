@@ -8,7 +8,7 @@ from set_company import set_company
 from write_excel import write_excel
 
 def main():
-    excel_file  = 'data_origin.xlsx'
+    excel_file  = 'data_origin.xls'
     result_file = 'result.xlsx'
 
     data_frame  = read_excel(excel_file=excel_file, sheet_name='Sheet1')

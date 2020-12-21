@@ -1,52 +1,75 @@
 """
 Write excel
+ticker	assets_total	ROA_annual	sales_annual	rd_expense	sic	debt_to_assets	firm_id	RD_spending	csp_annual	ad_intensity_industry	
+southafrica_dum	sic_2	patent_num_2	cited_num_2	red	constituency	_merge	ROA
 """
 
 #! /usr/bin/env python3
 
+
+import numpy as np
 import openpyxl
 
 def write_excel(companies, file_name='results.xlsx'):
 
-    wb        = openpyxl.Workbook()
-    ws        = wb.create_sheet('Result')
-    menu_row  = ['ticker', 'Assets', 'Sales', 'Innovation', 'Risk', 'CSP', 'Differentiation', 'ROA', 'Sic_2', 'CSP_Diff', 'CSP_Inno']
+    wb          = openpyxl.Workbook()
+    ws          = wb.create_sheet('Result')
+    years_array = range(1994, 2014)
+    menu_row    = ['year', 'ticker', 'sic_2', 'csp_annual', 'rd_expense', 'ad_intensity_industry', 'sales_annual', 'debt_to_assets', 'red', 'constituency', 'ROA']
     ws.append(menu_row)
 
     for key in companies:
-        companies[key].get_assets()
-        companies[key].get_sales()
-        companies[key].get_innovation()
-        companies[key].get_risk()
-        companies[key].get_csp()
-        companies[key].get_differentiation()
-        companies[key].get_csp_diff()
-        companies[key].get_csp_inno()
-        companies[key].get_sic_2_actual()
+        companies[key].set_valid()
 
-        try:
-            roa = companies[key].ROA[2001]
-        except:
-            roa = None
+    for year in years_array:
+        weight_dict = {year-3:0.25, year-2:0.5, year-1:1.0}
+        for key in companies:
+            if (companies[key].valid):
 
-        company_row = [companies[key].name, \
-                       companies[key].assets, \
-                       companies[key].sales, \
-                       companies[key].innovation, \
-                       companies[key].risk, \
-                       companies[key].csp, \
-                       companies[key].differentiation, \
-                       roa, \
-                       companies[key].sic_2_actual, \
-                       companies[key].csp_diff, \
-                       companies[key].csp_inno]
+                companies[key].get_sic_2_actual()
+                csp_annual_cal = companies[key].get_csp_annual_cal(weight_dict=weight_dict)
+                rd_expense_cal = companies[key].get_rd_expense_cal(weight_dict=weight_dict)
+                ad_intensity_industry_cal = companies[key].get_ad_intensity_industry_cal(weight_dict=weight_dict)
+                sales_annual_cal = companies[key].get_sales_annual_cal(weight_dict=weight_dict)
+                debt_to_assets_cal = companies[key].get_debt_to_assets_cal(weight_dict=weight_dict)
 
-        # Remove none row
-        if(None in company_row):
-            # print(company_row)
-            continue
+                try:
+                    roa          = companies[key].roa_annual[year]
+                    red          = companies[key].red[year]
+                    constituency = companies[key].constituency[year]
+                except:
+                    roa = None
+                    red = None
+                    constituency = None
 
-        ws.append(company_row)
+                compare_row = [ companies[key].sic_2_actual, 
+                                csp_annual_cal, 
+                                rd_expense_cal, 
+                                ad_intensity_industry_cal, 
+                                sales_annual_cal, 
+                                debt_to_assets_cal, 
+                                roa
+                ]
+
+                company_row = [ year, 
+                                companies[key].name, 
+                                companies[key].sic_2_actual, 
+                                csp_annual_cal, 
+                                rd_expense_cal, 
+                                ad_intensity_industry_cal, 
+                                sales_annual_cal, 
+                                debt_to_assets_cal, 
+                                red, 
+                                constituency, 
+                                roa
+                ]
+
+                # Remove none row
+                if(np.nan in compare_row):
+                    print(company_row)
+                    continue
+
+                ws.append(company_row)
 
     wb.save(file_name)
 
