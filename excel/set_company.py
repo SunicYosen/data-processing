@@ -18,6 +18,8 @@ def set_company(data_frame):
         data_year         = data_frame['year'][index]
         company_name      = data_frame['ticker'][index]
 
+        print('{}:{}'.format(data_year, company_name))
+
         data_array        = [data_frame['assets_total'][index],
                              data_frame['ROA_annual'][index],
                              data_frame['sales_annual'][index],
@@ -58,7 +60,7 @@ def set_company(data_frame):
 
             for data in data_array:
                 if pd.isnull(data):
-                    print(data_year, company_name)
+                    # print(data_year, company_name)
                     companies[company_name].valid = False
                     break
         
@@ -85,7 +87,7 @@ def set_company(data_frame):
 
             for data in data_array:
                 if pd.isnull(data):
-                    print(data_year, company_name)
+                    # print(data_year, company_name)
                     company_temp.valid = False
                     break
 
