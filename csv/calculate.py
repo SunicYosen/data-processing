@@ -20,8 +20,11 @@ def calculate(dict_data):
             total_value  = 0.0
             total_number = 0
             for j in range(index, len(data_array)):
-                if (datetime.strptime(str(data_array[j].time_stamp),"%Y-%m-%d %H:%M:%S") - datetime.strptime(str(data.time_stamp),"%Y-%m-%d %H:%M:%S")).seconds > 900:
+                delta_time = (datetime.strptime(str(data_array[j].time_stamp),"%Y-%m-%d %H:%M:%S") - datetime.strptime(str(data.time_stamp),"%Y-%m-%d %H:%M:%S")).seconds
+                if delta_time > 900:
                     break
+
+                print(data.time_stamp, data_array[j].time_stamp, delta_time)
 
                 total_value  += data_array[j].value
                 total_number += 1
