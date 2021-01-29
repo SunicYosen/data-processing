@@ -7,3 +7,9 @@ Data processing with Python3
 Using libraries:
 - pandas
 - openpyxl
+
+## [CSV](csv)
+
+Using libraries:
+- pandas
+- sql
